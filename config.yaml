@@ -11,17 +11,24 @@ channels_params:
     placeholder: 'Plain text'
     type: string
     default: ''
-  page_url:
-    name: 'Github URL'
-    placeholder: 'Plain text'
+  repo_url:
+    name: 'Github repository URL'
+    placeholder: 'username/repository'
     type: string
     default: ''
-  is_organisation:
-    name: 'Organisation'
+  had_organisation:
+    name: 'Has an organisation'
     type: bool
+    default: no
+  orga_url:
+    name: 'Github organisation URL'
+    placeholder: 'Organisation'
+    type: string
+    default: ''
   disp_commits:
     name: 'Display commits'
     type: bool
+    default: yes
   number_commits:
     name: 'Number of commits on each slide'
     placeholder: 'Number of post'
@@ -31,6 +38,7 @@ channels_params:
   disp_contributors:
     name: 'Display contributors'
     type: bool
+    default: yes
   number_contributors:
     name: 'Number of contributors on each slide'
     placeholder: 'Number of contributors'
@@ -40,6 +48,7 @@ channels_params:
   disp_issues:
     name: 'Display opened and closed issues'
     type: bool
+    default: yes
   number_issues:
     name: 'Pair of opened and closed issues on each slide'
     placeholder: 'Pair of issues'
@@ -49,15 +58,11 @@ channels_params:
   disp_releases:
     name: 'Display new releases'
     type: bool
-  number_releases:
-    name: 'Number of releases on each slide'
-    placeholder: 'Number of releases'
-    type: int
-    default: 3
-    min: 1
+    default: yes
   disp_stat:
     name: 'Display general informations about the repository'
     type: bool
+    default: yes
   duration:
     name: 'Slide duration in seconds'
     placeholder: 'Slide duration in seconds'
