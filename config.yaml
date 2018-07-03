@@ -2,30 +2,65 @@ plugin:
   webapp: no
   static: no
   description: |
-    TO-DO
+    This plugin displays informations about a GitHub repository/organisation such as the number of commits, the top contributors, the opened and closed issues, the new releases and some stats.
   dependencies:
     - urllib
 channels_params:
   token:
-    name: 'App Token (Testing)'
+    name: 'User or Organisation Token'
     placeholder: 'Plain text'
     type: string
     default: ''
-  page_id:
-    name: 'Facebook page id (url for later)'
+  page_url:
+    name: 'Github URL'
     placeholder: 'Plain text'
     type: string
     default: ''
-  number_post:
-    name: 'Number of post in each slide'
+  is_organisation:
+    name: 'Organisation'
+    type: bool
+  disp_commits:
+    name: 'Display commits'
+    type: bool
+  number_commits:
+    name: 'Number of commits on each slide'
     placeholder: 'Number of post'
     type: int
     default: 3
     min: 1
+  disp_contributors:
+    name: 'Display contributors'
+    type: bool
+  number_contributors:
+    name: 'Number of contributors on each slide'
+    placeholder: 'Number of contributors'
+    type: string
+    default: 3
+    min: 1
+  disp_issues:
+    name: 'Display opened and closed issues'
+    type: bool
+  number_issues:
+    name: 'Pair of opened and closed issues on each slide'
+    placeholder: 'Pair of issues'
+    type: int
+    default: 3
+    min: 1
+  disp_releases:
+    name: 'Display new releases'
+    type: bool
+  number_releases:
+    name: 'Number of releases on each slide'
+    placeholder: 'Number of releases'
+    type: int
+    default: 3
+    min: 1
+  disp_stat:
+    name: 'Display general informations about the repository'
+    type: bool
   duration:
     name: 'Slide duration in seconds'
     placeholder: 'Slide duration in seconds'
     type: int
     default: 10
     min: 1
-
