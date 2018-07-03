@@ -64,9 +64,11 @@ class GitIctv():
 
 if __name__ == "__main__":
     git = GitIctv("TOKEN", 'REPO')
+<<<<<<< HEAD
     t = git.get_release()
     print(t)
     for x in t:
         print(x)
     #git = Github("a275dcebd8a153fa547861ed291f39424571a4a2").get_organization("scala")
     #print(git.avatar_url)
+=======
