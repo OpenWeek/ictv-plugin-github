@@ -59,8 +59,5 @@ class GitIctv():
 
 
 if __name__ == "__main__":
-    git = GitIctv("a275dcebd8a153fa547861ed291f39424571a4a2", 'fdardenne/TestRepo')
+    git = GitIctv("TOKEN", 'REPO')
     t = git.get_issue(5)
-    print(type(t))
-    #git = Github("a275dcebd8a153fa547861ed291f39424571a4a2").get_organization("scala")
-    #print(git.avatar_url)
