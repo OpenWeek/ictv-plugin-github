@@ -18,9 +18,9 @@ class GitIctv():
         issue_list = []
         for issue in range(number_of_issues):
             try:
-                print(issues[issue].user.avatar_url)
-                issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': issues[issue].closed_at, 'created_at': issues[issue].created_at, 'comments': issues[issue].comments, 'avatar': issues[issue].user.avatar_url })
+                issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': issues[issue].closed_at, 'created_at': issues[issue].created_at, 'comments': issues[issue].comments, 'avatar_url': issues[issue].user.avatar_url })
             except Exception as e:
+                print(e)
                 break
 
         if len(issue_list) >0:
@@ -32,7 +32,8 @@ class GitIctv():
         releases = self.repo.get_releases()
         try:
             release = releases[0]
-            return {'title': release.title, 'author': release.author, 'body': release.body, 'created_at': release.created_at, 'version': release.tag_name}
+            #TO-DO Pas moyen de get l'auteur ainsi que son logo
+            return {'title': release.title, 'author': release.author.name, 'body': release.body, 'created_at': release.created_at, 'version': release.tag_name}
         except:
             return None
 
@@ -41,8 +42,11 @@ class GitIctv():
         commit_list = []
         for commit in range(number_of_commits):
             try:
-                commit_list.append({'author': commits[commit].author, 'message': message, "created_at": commits[commit].created_at})
-            except:
+                message = commits[commit].commit.message
+                message = message.split("\n")[0]
+                commit_list.append({'author': commits[commit].author.name, 'message': message, "created_at": commits[commit].commit.author.date, 'avatar_url':commits[commit].author.avatar_url })
+            except Exception as e:
+                print(e)
                 break
 
         if len(commit_list) > 0:
@@ -59,8 +63,10 @@ class GitIctv():
 
 
 if __name__ == "__main__":
-    git = GitIctv("a275dcebd8a153fa547861ed291f39424571a4a2", 'fdardenne/TestRepo')
-    t = git.get_issue(5)
-    print(type(t))
+    git = GitIctv("TOKEN", 'REPO')
+    t = git.get_release()
+    print(t)
+    for x in t:
+        print(x)
     #git = Github("a275dcebd8a153fa547861ed291f39424571a4a2").get_organization("scala")
     #print(git.avatar_url)
