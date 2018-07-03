@@ -6,38 +6,54 @@ from ictv.plugin_manager.plugin_slide import PluginSlide
 from ictv.plugin_manager.plugin_utils import MisconfiguredParameters
 import json
 import urllib.request
+from github import Github
 
 
 
 
 def get_content(channel_id):
+
     channel = PluginChannel.get(channel_id)
     logger_extra = {'channel_name': channel.name, 'channel_id': channel.id}
-    logger = get_logger('fb-reader', channel)
+    logger = get_logger('github-reader', channel)
     token = channel.get_config_param('token')
-    page_id = channel.get_config_param('page_id')
-    number_post = channel.get_config_param('number_post')
     duration = channel.get_config_param('duration')
+    repo_url = channel.get_config_param('repo_url')
+    had_organisation = channel.get_config_param('had_organisation')
+    orga_url = channel.get_config_param('orga_url')
+    disp_commits = channel.get_config_param('disp_commits')
+    number_commits = channel.get_config_param('number_commits')
+    disp_contributors = channel.get_config_param('disp_contributors')
+    number_contributors = channel.get_config_param('number_contributors')
+    disp_issues = channel.get_config_param('disp_issues')
+    number_issues = channel.get_config_param('number_issues')
+    disp_stat = channel.get_config_param('disp_stat')
 
-    if not token or not page_id:
+    if not token or not page_url:
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
         return []
 
-    return [FbReaderCapsule(token, page_id, number_post, duration)]
+    git_obj = GitIctv(token,page_url)
 
-def get_page_feed(token, page_id):
-    with urllib.request.urlopen("https://graph.facebook.com/v3.0/"+page_id+"?fields=feed&access_token="+token) as url:
-        raw = url.read()
-        json_feed = json.loads(raw)
-        feed = json_obj['feed']["data"]
+    if disp_stat:
+        stat = git_obj.get_stat()
+    if disp_issues:
+        issue_list = git_obj.get_issue()
+    if disp_commits:
+        commit_list = git_obj.get_commit()
+    if disp_releases:
+        release_list = git_obj.get_realease()
+    if disp_contributors:
+        contributo_list = git_obj.get_contributor()
+    if had_organisation:
+        repo_list = git_obj.get_repo()
 
-        return dict
-    return {}
+    return [GithubReaderCapsule(duration)]
 
-class FbReaderCapsule(PluginCapsule):
+class GithubReaderCapsule(PluginCapsule):
 
-    def __init__(self, token, page_id, number_post, duration):
-        self._slides = [FbReaderSlide(token, page_id, number_post, duration)]
+    def __init__(self,duration):
+        self._slides = [GithubReaderSlide(duration)]
 
     def get_slides(self):
         return self._slides
@@ -48,8 +64,8 @@ class FbReaderCapsule(PluginCapsule):
     def __repr__(self):
         return str(self.__dict__)
 
-class FbReaderSlide(PluginSlide):
-    def __init__(self, token, page_id, number_post, duration):
+class GithubReaderSlide(PluginSlide):
+    def __init__(self,duration):
         self._duration = duration
         self._content = {'background-1': {'src': 'https://bonsaieejit.files.wordpress.com/2011/12/background.jpg', 'size': 'contain'}, 'text-1': {'text': token}}
 
