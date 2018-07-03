@@ -9,7 +9,7 @@ class GitIctv():
         self.organization = None
 
         if(organization):
-            self.organization = self.g.get_organization(organization)
+            self.organization = self.g.get_organization("scala")
 
 
 
@@ -20,7 +20,6 @@ class GitIctv():
             try:
                 issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': issues[issue].closed_at, 'created_at': issues[issue].created_at, 'comments': issues[issue].comments, 'avatar_url': issues[issue].user.avatar_url })
             except Exception as e:
-                print(e)
                 break
 
         if len(issue_list) >0:
@@ -46,7 +45,6 @@ class GitIctv():
                 message = message.split("\n")[0]
                 commit_list.append({'author': commits[commit].author.name, 'message': message, "created_at": commits[commit].commit.author.date, 'avatar_url':commits[commit].author.avatar_url })
             except Exception as e:
-                print(e)
                 break
 
         if len(commit_list) > 0:
@@ -56,11 +54,21 @@ class GitIctv():
 
     def get_organization(self):
         if (self.organization):
-            pass
+            repos_organization = []
+            repos = self.organization.get_repos()
+            for repo in repos:
+                repos_organization.append(repo.name)
+
+
+
+            return {"avatar-url": self.organization.avatar_url, "name": self.organization.name, "repos":repos_organization}
         else:
             return None
 
 
 
 if __name__ == "__main__":
-    git = GitIctv("TOKEN", 'REPO')
+
+    git = GitIctv("TOKEN", 'fdardenne/TestRepo', "scala")
+    t = git.get_organization()
+    print(t)
