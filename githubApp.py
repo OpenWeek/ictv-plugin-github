@@ -1,6 +1,5 @@
 from github import Github
 
-
 class GitIctv():
 
     def __init__(self, token, repo, organization=None):
@@ -9,7 +8,7 @@ class GitIctv():
         self.organization = None
 
         if(organization):
-            self.organization = self.g.get_organization("scala")
+            self.organization = self.g.get_organization(organization)
 
 
 
@@ -49,7 +48,7 @@ class GitIctv():
                 message = commits[commit].commit.message
                 message = message.split("\n")[0]
                 name = commits[commit].author.name
-                if(name):
+                if(not name):
                     name = "Undefined"
                 commit_list.append({'author': name, 'message': message, "created_at": commits[commit].commit.author.date.strftime("%d %B %Y %H:%M"), 'avatar_url':commits[commit].author.avatar_url })
             except Exception as e:
@@ -63,12 +62,19 @@ class GitIctv():
 
         return None
 
-    def get_organization(self):
+    def get_organization(self, number_organizations):
         if (self.organization):
             repos_organization = []
-            repos = self.organization.get_repos()
-            for repo in repos:
-                repos_organization.append(repo.name)
+            repos = [e for e in self.organization.get_repos()]
+
+            print(repos)
+            sorted_repos = sorted(repos, reverse=True, key=lambda k: k.updated_at)
+            print(sorted_repos)
+            for count in range(number_organizations):
+                repo = sorted_repos[count]
+                print(repo,repo.updated_at)
+                print(repo.full_name.split('/')[1])
+                repos_organization.append(repo.full_name.split('/')[1])
 
             return {"avatar-url": self.organization.avatar_url, "name": self.organization.name, "repos":repos_organization}
         else:
@@ -82,7 +88,7 @@ class GitIctv():
 
 
 
-if __name__ == "__main__":
-
-    git = GitIctv("8f56162284548f2917b7fa22f9e8cc70e3279839", 'scala/scala', "scala")
-    print(git.get_commit(5))
+#if __name__ == "__main__":
+#
+#    git = GitIctv("8f56162284548f2917b7fa22f9e8cc70e3279839", 'scala/scala', "scala")
+#    print(git.get_commit(5))

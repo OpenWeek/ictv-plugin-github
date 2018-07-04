@@ -35,6 +35,7 @@ def get_content(channel_id):
     duration = channel.get_config_param('duration')*1000
     repo_url = channel.get_config_param('repo_url')
     had_organization = channel.get_config_param('had_organization')
+    number_organizations = channel.get_config_param('number_organizations')
     orga_url = channel.get_config_param('orga_url')
     print("after orga_url")
     disp_commits = channel.get_config_param('disp_commits')
@@ -74,7 +75,7 @@ def get_content(channel_id):
     #if disp_contributors:
     #    contributor_list = git_obj.get_contributor()
     if had_organization:
-        organization_list = git_obj.get_organization()
+        organization_list = git_obj.get_organization(number_organizations)
 
     print("BeforeReturn")
 
@@ -117,40 +118,44 @@ class GithubReaderSlide(PluginSlide):
         self._content['subtitle-1'] = {'text': mark }
         self._duration = duration
         i = 1
-        for elem in list:
-            #if mark == 'stat': #TODO
-            #    self._content['text-'+str(i)] = elem[message]
-            #    self._content['image-'+str(i)] = elem[text]
-            print('text-'+str(i))
+        if mark == 'organization':
             print(mark)
-            if mark == 'issue':
-                if elem['state'] == 'open':
-                    self._content['text-'+str(i)] = {'text': elem['title']+"<br>state : "+elem['state']+"<br>"+elem['comments']}
-                elif elem['state'] == 'closed':
-                    self._content['text-'+str(i)] = {'text': elem['title']+"<br>state : "+elem['state']+"closed at : "+elem['closed_at']+"<br>"+elem['comments']}
-                #else TODO, undefined ?
-                self._content['image-'+str(i)] = {'src': elem['avatar_url']}
-            elif mark == 'commit':
-                print("commit")
-                print("it : "+str(i))
-                print(elem['message'])
-                print(elem['author'])
-                print(elem['created_at'])
-                print(elem['avatar_url'])
-                self._content['text-'+str(i)] = {'text': elem['author']+"<br>created at : "+elem['created_at']+"<br>"+elem['message']}
-                self._content['image-'+str(i)] = {'src': elem['avatar_url']}
-            elif mark == 'release':
-                self._content['text-'+str(i)] = {'text':elem['title']+"<br>author :"+elem['author']+ ", created at : "+elem['created_at']+", version :"+elem['version']+"<br>"+elem['body']}
-                self._content['image-'+str(i)] = ""
-            #elif mark == 'contributor': #TODO
-            #    self._content['text-'+str(i)] = elem[message]
-            #    self._content['image-'+str(i)] = elem[text]
-            elif mark == 'organization':
-                self._content['text-'+str(i)] = {'text':elem['name']+"<br>"+elem['repos']}
-                self._content['image-'+str(i)] = {'src':elem['avatar-url']}
-            else:
-                break #raise an error unknown mark (or None mark)
-            i += 1
+            for repo in list['repos']:
+                self._content['text-'+str(i)] = {'text':list['name']+"<br>"+repo}
+                self._content['image-'+str(i)] = {'src':list['avatar-url']}
+                i += 1
+        else:
+            for elem in list:
+                #if mark == 'stat': #TODO
+                #    self._content['text-'+str(i)] = elem[message]
+                #    self._content['image-'+str(i)] = elem[text]
+                print('text-'+str(i))
+                print(mark)
+                if mark == 'issue':
+                    if elem['state'] == 'open':
+                        self._content['text-'+str(i)] = {'text': elem['title']+"<br>state : "+elem['state']+"<br>"+elem['comments']}
+                    elif elem['state'] == 'closed':
+                        self._content['text-'+str(i)] = {'text': elem['title']+"<br>state : "+elem['state']+"closed at : "+elem['closed_at']+"<br>"+elem['comments']}
+                    #else TODO, undefined ?
+                    self._content['image-'+str(i)] = {'src': elem['avatar_url']}
+                elif mark == 'commit':
+                    print("commit")
+                    print("it : "+str(i))
+                    print(elem['message'])
+                    print(elem['author'])
+                    print(elem['created_at'])
+                    print(elem['avatar_url'])
+                    self._content['text-'+str(i)] = {'text': elem['author']+"<br>created at : "+elem['created_at']+"<br>"+elem['message']}
+                    self._content['image-'+str(i)] = {'src': elem['avatar_url']}
+                elif mark == 'release':
+                    self._content['text-'+str(i)] = {'text':elem['title']+"<br>author :"+elem['author']+ ", created at : "+elem['created_at']+", version :"+elem['version']+"<br>"+elem['body']}
+                    self._content['image-'+str(i)] = ""
+                #elif mark == 'contributor': #TODO
+                #    self._content['text-'+str(i)] = elem[message]
+                #    self._content['image-'+str(i)] = elem[text]
+                else:
+                    break #raise an error unknown mark (or None mark)
+                i += 1
 
 
     def get_duration(self):
@@ -165,8 +170,8 @@ class GithubReaderSlide(PluginSlide):
     def __repr__(self):
         return str(self.__dict__)
 
-if __name__ == "__main__":
-
-    git = GitIctv("TOKEN", 'fdardenne/TestRepo', "scala")
-    t = git.get_organization()
-    print(t)
+#if __name__ == "__main__":
+#
+#    git = GitIctv("TOKEN", 'fdardenne/TestRepo', "scala")
+#    t = git.get_organization()
+#    print(t)

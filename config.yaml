@@ -20,6 +20,12 @@ channels_params:
     name: 'Has an organization'
     type: bool
     default: no
+  number_organizations:
+    name: 'Number of last-updated repositories on each slide'
+    placeholder: 'Number of last-updated repositories'
+    type: int
+    default: 3
+    min: 1
   orga_url:
     name: 'Github organization URL'
     placeholder: 'organization'
