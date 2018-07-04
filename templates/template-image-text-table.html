@@ -51,7 +51,7 @@ $code:
     <table>
         $for i in range(1, get_number_of_cells(slide) + 1):
             <tr>
-                <td>$:img(content=slide, number=i, editor_type="image", editor_placeholder="Choose an image", editor_label="Image", editor_default="/static/plugins/editor/placeholders/270x350.png", editor_order="4")</td>
+                <td style="vertical-align: middle;">$:img(content=slide, number=i, editor_type="image", editor_placeholder="Choose an image", editor_label="Image", editor_default="/static/plugins/editor/placeholders/270x350.png", editor_order="4")</td>
                 <td>$:text(content=slide, number=i, max_chars=640, editor_type="textarea", editor_placeholder="Text",editor_label="Text", editor_default="Text", editor_order="3")</td>
             </tr>
     </table>
