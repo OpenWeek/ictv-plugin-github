@@ -34,7 +34,7 @@ def get_content(channel_id):
     print("before duration")
     duration = channel.get_config_param('duration')*1000
     repo_url = channel.get_config_param('repo_url')
-    had_organisation = channel.get_config_param('had_organisation')
+    had_organization = channel.get_config_param('had_organization')
     orga_url = channel.get_config_param('orga_url')
     print("after orga_url")
     disp_commits = channel.get_config_param('disp_commits')
@@ -44,6 +44,7 @@ def get_content(channel_id):
     disp_issues = channel.get_config_param('disp_issues')
     number_issues = channel.get_config_param('number_issues')
     disp_stat = channel.get_config_param('disp_stat')
+    disp_releases = channel.get_config_param('disp_releases')
     print("After variable")
     if not token or not repo_url:
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
@@ -60,7 +61,7 @@ def get_content(channel_id):
     commit_list = None
     release_list = None
     contributor_list = None
-    organisation_list = None
+    organization_list = None
 
     #if disp_stat:
     #    stat = git_obj.get_stat()
@@ -69,19 +70,19 @@ def get_content(channel_id):
     if disp_commits:
         commit_list = git_obj.get_commit(number_commits)
     if disp_releases:
-        release_list = git_obj.get_realease()
+        release_list = git_obj.get_release()
     #if disp_contributors:
     #    contributor_list = git_obj.get_contributor()
-    if had_organisation:
-        organization_list = git_obj.get_organisation()
+    if had_organization:
+        organization_list = git_obj.get_organization()
 
     print("BeforeReturn")
 
-    return [GithubReaderCapsule(stat,issue_list,commit_list,release_list,contributor_list,organisation_list,duration)]
+    return [GithubReaderCapsule(stat,issue_list,commit_list,release_list,contributor_list,organization_list,duration)]
 
 class GithubReaderCapsule(PluginCapsule):
 
-    def __init__(self,stat,issue_list,commit_list,release_list,contributor_list,organisation_list,duration):
+    def __init__(self,stat,issue_list,commit_list,release_list,contributor_list,organization_list,duration):
         print("GithubReaderCapsule")
         self._slides = []
         if stat :
@@ -118,6 +119,7 @@ class GithubReaderSlide(PluginSlide):
             #if mark == 'stat': #TODO
             #    self._content['text-'+str(i)] = elem[message]
             #    self._content['image-'+str(i)] = elem[text]
+            print('text-'+str(i))
             if mark == 'issue':
                 if elem['state'] == 'open':
                     self._content['text-'+str(i)] = elem['title']+"<br>state : "+elem['state']+"<br>"+elem['comments']
