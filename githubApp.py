@@ -18,10 +18,12 @@ class GitIctv():
         issue_list = []
         for issue in range(number_of_issues):
             try:
-                issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': issues[issue].closed_at.strftime("%d %B, %Y"), 'created_at': issues[issue].created_at.time.strftime("%d %B, %Y"), 'comments': issues[issue].comments, 'avatar_url': issues[issue].user.avatar_url })
+                issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': issues[issue].closed_at.strftime("%d %B, %Y"), 'created_at': issues[issue].created_at.time.strftime("%d %B, %Y"), 'comments': str(issues[issue].comments), 'avatar_url': issues[issue].user.avatar_url })
             except Exception as e:
+                print("EXCEPTION in githubApp.py")
+                print(e)
                 break
-
+        print(len(issue_list))
         if len(issue_list) >0:
             return issue_list
 

@@ -85,9 +85,11 @@ class GithubReaderCapsule(PluginCapsule):
     def __init__(self,stat,issue_list,commit_list,release_list,contributor_list,organization_list,duration):
         print("GithubReaderCapsule")
         self._slides = []
-        if stat :
+        print(type(issue_list))
+        if stat:
             self._slides.append(GithubReaderSlide(stat,duration,'stat'))
         if issue_list:
+            print("GithubReaderCapsule : issue_list")
             self._slides.append(GithubReaderSlide(issue_list,duration,'issue'))
         if commit_list:
             self._slides.append(GithubReaderSlide(commit_list,duration,'commit'))
@@ -120,13 +122,23 @@ class GithubReaderSlide(PluginSlide):
             #    self._content['text-'+str(i)] = elem[message]
             #    self._content['image-'+str(i)] = elem[text]
             print('text-'+str(i))
+            print(mark)
             if mark == 'issue':
+                print("issue")
+                print("it : "+str(i))
+                print(type(elem['state']))
+                print(type(elem['title']))
+                print(elem['title'])
+                print(type(elem['comments']))
+                print(elem['comments'])
+                print(type(elem['closed_at']))
+                print(type(elem['avatar_url']))
                 if elem['state'] == 'open':
                     self._content['text-'+str(i)] = elem['title']+"<br>state : "+elem['state']+"<br>"+elem['comments']
                 elif elem['state'] == 'closed':
                     self._content['text-'+str(i)] = elem['title']+"<br>state : "+elem['state']+"closed at : "+elem['closed_at']+"<br>"+elem['comments']
                 #else TODO, undefined ?
-                self._content['image-'+str(i)] = elem['avatar']
+                self._content['image-'+str(i)] = elem['avatar_url']
             elif mark == 'commit':
                 self._content['text-'+str(i)] = elem['author']+"<br>created at : "+elem['created_at']+"<br>"+elem['message']
                 self._content['image-'+str(i)] = ""
