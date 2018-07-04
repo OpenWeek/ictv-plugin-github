@@ -26,7 +26,7 @@ class GitIctv():
             except Exception as e:
                 print(e)
                 break
-        print(len(issue_list))
+
         if len(issue_list) >0:
             return issue_list
 
@@ -48,7 +48,10 @@ class GitIctv():
             try:
                 message = commits[commit].commit.message
                 message = message.split("\n")[0]
-                commit_list.append({'author': commits[commit].author.name, 'message': message, "created_at": commits[commit].commit.author.date.strftime("%d %B %Y %H:%M"), 'avatar_url':commits[commit].author.avatar_url })
+                name = commits[commit].author.name
+                if(name):
+                    name = "Undefined"
+                commit_list.append({'author': name, 'message': message, "created_at": commits[commit].commit.author.date.strftime("%d %B %Y %H:%M"), 'avatar_url':commits[commit].author.avatar_url })
             except Exception as e:
                 print(e)
                 break
@@ -81,5 +84,5 @@ class GitIctv():
 
 if __name__ == "__main__":
 
-    git = GitIctv("8f56162284548f2917b7fa22f9e8cc70e3279839", 'odoo/odoo', "scala")
-    print(git.get_issue(5))
+    git = GitIctv("8f56162284548f2917b7fa22f9e8cc70e3279839", 'scala/scala', "scala")
+    print(git.get_commit(5))
