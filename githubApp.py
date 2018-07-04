@@ -18,7 +18,7 @@ class GitIctv():
         issue_list = []
         for issue in range(number_of_issues):
             try:
-                issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': issues[issue].closed_at, 'created_at': issues[issue].created_at, 'comments': issues[issue].comments, 'avatar_url': issues[issue].user.avatar_url })
+                issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': issues[issue].closed_at.strftime("%d %B, %Y"), 'created_at': issues[issue].created_at.time.strftime("%d %B, %Y"), 'comments': issues[issue].comments, 'avatar_url': issues[issue].user.avatar_url })
             except Exception as e:
                 break
 
@@ -48,7 +48,9 @@ class GitIctv():
                 break
 
         if len(commit_list) > 0:
+
             return commit_list
+
 
         return None
 
@@ -64,12 +66,12 @@ class GitIctv():
             return None
 
     def top_contributor(self, number_of_contributors):
-        pass        
+        pass
 
 
 
 
 if __name__ == "__main__":
 
-    git = GitIctv("5f5dc73b2b96994846e3d32925967386179df3b4", 'fdardenne/TestRepo', "scala")
-    print(git.get_issue(3))
+    git = GitIctv("8f56162284548f2917b7fa22f9e8cc70e3279839", 'scala/scala', "scala")
+    print(git.get_issue(5))
