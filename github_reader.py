@@ -94,7 +94,7 @@ class GithubReaderCapsule(PluginCapsule):
             self._slides.append(GithubReaderSlide(release_list,duration,'release'))
         if contributor_list:
             self._slides.append(GithubReaderSlide(contributor_list,duration,'contributor'))
-        if repo_list:
+        if organization_list:
             self._slides.append(GithubReaderSlide(organization_list,duration,'organization'))
 
     def get_slides(self):
