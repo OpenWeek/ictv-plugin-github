@@ -19,9 +19,9 @@ class GitIctv():
         for issue in range(number_of_issues):
             try:
                 if issues[issue].closed_at:
-                    issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': issues[issue].closed_at.strftime("%d %B %Y %H:%M"), 'created_at': issues[issue].created_at.strftime("%d %B %Y %H:%M"), 'comments': issues[issue].comments, 'avatar_url': issues[issue].user.avatar_url })
+                    issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': issues[issue].closed_at.strftime("%d %B %Y %H:%M"), 'created_at': issues[issue].created_at.strftime("%d %B %Y %H:%M"), 'comments': str(issues[issue].comments), 'avatar_url': issues[issue].user.avatar_url })
                 else:
-                    issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': None, 'created_at': issues[issue].created_at.strftime("%d %B %Y %H:%M"), 'comments': issues[issue].comments, 'avatar_url': issues[issue].user.avatar_url })
+                    issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': 'Not closed', 'created_at': issues[issue].created_at.strftime("%d %B %Y %H:%M"), 'comments': str(issues[issue].comments), 'avatar_url': issues[issue].user.avatar_url })
 
             except Exception as e:
                 print(e)

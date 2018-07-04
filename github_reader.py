@@ -78,11 +78,11 @@ def get_content(channel_id):
 
     print("BeforeReturn")
 
-    return [GithubReaderCapsule(stat,issue_list,commit_list,release_list,contributor_list,organization_list,duration)]
+    return [GithubReaderCapsule(repo_url,stat,issue_list,commit_list,release_list,contributor_list,organization_list,duration)]
 
 class GithubReaderCapsule(PluginCapsule):
 
-    def __init__(self,stat,issue_list,commit_list,release_list,contributor_list,organization_list,duration):
+    def __init__(self,repo_url,stat,issue_list,commit_list,release_list,contributor_list,organization_list,duration):
         print("GithubReaderCapsule")
         self._slides = []
         print(type(issue_list))
@@ -90,15 +90,15 @@ class GithubReaderCapsule(PluginCapsule):
             self._slides.append(GithubReaderSlide(stat,duration,'stat'))
         if issue_list:
             print("GithubReaderCapsule : issue_list")
-            self._slides.append(GithubReaderSlide(issue_list,duration,'issue'))
+            self._slides.append(GithubReaderSlide(repo_url,issue_list,duration,'issue'))
         if commit_list:
-            self._slides.append(GithubReaderSlide(commit_list,duration,'commit'))
+            self._slides.append(GithubReaderSlide(repo_url,commit_list,duration,'commit'))
         if release_list:
-            self._slides.append(GithubReaderSlide(release_list,duration,'release'))
+            self._slides.append(GithubReaderSlide(repo_url,release_list,duration,'release'))
         if contributor_list:
-            self._slides.append(GithubReaderSlide(contributor_list,duration,'contributor'))
+            self._slides.append(GithubReaderSlide(repo_url,contributor_list,duration,'contributor'))
         if organization_list:
-            self._slides.append(GithubReaderSlide(organization_list,duration,'organization'))
+            self._slides.append(GithubReaderSlide(repo_url,organization_list,duration,'organization'))
 
     def get_slides(self):
         return self._slides
@@ -110,11 +110,11 @@ class GithubReaderCapsule(PluginCapsule):
         return str(self.__dict__)
 
 class GithubReaderSlide(PluginSlide):
-    def __init__(self, list, duration,mark = None):
+    def __init__(self,repo_url,list, duration,mark = None):
         print("GithubReaderSlide")
         self._content = {}
-        self._content['title'] = 'test'
-        self._content['subtitle'] = 'Insert subtitle here'
+        self._content['title-1'] = {'text':repo_url.split('/')[1]}
+        self._content['subtitle-1'] = {'text': mark }
         self._duration = duration
         i = 1
         for elem in list:
@@ -124,37 +124,33 @@ class GithubReaderSlide(PluginSlide):
             print('text-'+str(i))
             print(mark)
             if mark == 'issue':
-                print("issue")
-                print("it : "+str(i))
-                print(type(elem['state']))
-                print(type(elem['title']))
-                print(elem['title'])
-                print(type(elem['comments']))
-                print(elem['comments'])
-                print(type(elem['closed_at']))
-                print(type(elem['avatar_url']))
                 if elem['state'] == 'open':
-                    self._content['text-'+str(i)] = elem['title']+"<br>state : "+elem['state']+"<br>"+elem['comments']
+                    self._content['text-'+str(i)] = {'text': elem['title']+"<br>state : "+elem['state']+"<br>"+elem['comments']}
                 elif elem['state'] == 'closed':
-                    self._content['text-'+str(i)] = elem['title']+"<br>state : "+elem['state']+"closed at : "+elem['closed_at']+"<br>"+elem['comments']
+                    self._content['text-'+str(i)] = {'text': elem['title']+"<br>state : "+elem['state']+"closed at : "+elem['closed_at']+"<br>"+elem['comments']}
                 #else TODO, undefined ?
-                self._content['image-'+str(i)] = elem['avatar_url']
+                self._content['image-'+str(i)] = {'src': elem['avatar_url']}
             elif mark == 'commit':
-                self._content['text-'+str(i)] = elem['author']+"<br>created at : "+elem['created_at']+"<br>"+elem['message']
-                self._content['image-'+str(i)] = ""
+                print("commit")
+                print("it : "+str(i))
+                print(elem['message'])
+                print(elem['author'])
+                print(elem['created_at'])
+                print(elem['avatar_url'])
+                self._content['text-'+str(i)] = {'text': elem['author']+"<br>created at : "+elem['created_at']+"<br>"+elem['message']}
+                self._content['image-'+str(i)] = {'src': elem['avatar_url']}
             elif mark == 'release':
-                self._content['text-'+str(i)] = elem['title']+"<br>author :"+elem['author']+ ", created at : "+elem['created_at']+", version :"+elem['version']+"<br>"+elem['body']
+                self._content['text-'+str(i)] = {'text':elem['title']+"<br>author :"+elem['author']+ ", created at : "+elem['created_at']+", version :"+elem['version']+"<br>"+elem['body']}
                 self._content['image-'+str(i)] = ""
             #elif mark == 'contributor': #TODO
             #    self._content['text-'+str(i)] = elem[message]
             #    self._content['image-'+str(i)] = elem[text]
             elif mark == 'organization':
-                self._content['text-'+str(i)] = elem['name']+"<br>"+elem['repos']
-                self._content['image-'+str(i)] = elem['avatar-url']
+                self._content['text-'+str(i)] = {'text':elem['name']+"<br>"+elem['repos']}
+                self._content['image-'+str(i)] = {'src':elem['avatar-url']}
             else:
                 break #raise an error unknown mark (or None mark)
             i += 1
-        self._content = {'background-1': {'src': 'https://bonsaieejit.files.wordpress.com/2011/12/background.jpg', 'size': 'contain'}, 'text-1': {'text': token}}
 
 
     def get_duration(self):
@@ -164,7 +160,7 @@ class GithubReaderSlide(PluginSlide):
         return self._content
 
     def get_template(self) -> str:
-        return 'template-image-text-table.html'
+        return 'template-image-text-table'
 
     def __repr__(self):
         return str(self.__dict__)
