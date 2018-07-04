@@ -14,7 +14,7 @@ class GitIctv():
 
 
     def get_issue(self, number_of_issues):
-        issues = self.repo.get_issues()
+        issues = self.repo.get_issues(state="all")
         issue_list = []
         for issue in range(number_of_issues):
             try:
@@ -59,16 +59,17 @@ class GitIctv():
             for repo in repos:
                 repos_organization.append(repo.name)
 
-
-
             return {"avatar-url": self.organization.avatar_url, "name": self.organization.name, "repos":repos_organization}
         else:
             return None
+
+    def top_contributor(self, number_of_contributors):
+        pass        
+
 
 
 
 if __name__ == "__main__":
 
-    git = GitIctv("TOKEN", 'fdardenne/TestRepo', "scala")
-    t = git.get_organization()
-    print(t)
+    git = GitIctv("5f5dc73b2b96994846e3d32925967386179df3b4", 'fdardenne/TestRepo', "scala")
+    print(git.get_issue(3))
