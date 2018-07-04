@@ -18,8 +18,13 @@ class GitIctv():
         issue_list = []
         for issue in range(number_of_issues):
             try:
-                issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': issues[issue].closed_at.strftime("%d %B %Y %H:%M"), 'created_at': issues[issue].created_at.time.strftime("%d %B %Y %H:%M"), 'comments': issues[issue].comments, 'avatar_url': issues[issue].user.avatar_url })
+                if issues[issue].closed_at:
+                    issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': issues[issue].closed_at.strftime("%d %B %Y %H:%M"), 'created_at': issues[issue].created_at.strftime("%d %B %Y %H:%M"), 'comments': issues[issue].comments, 'avatar_url': issues[issue].user.avatar_url })
+                else:
+                    issue_list.append({'title':issues[issue].title, 'state': issues[issue].state, 'closed_at': None, 'created_at': issues[issue].created_at.strftime("%d %B %Y %H:%M"), 'comments': issues[issue].comments, 'avatar_url': issues[issue].user.avatar_url })
+
             except Exception as e:
+                print(e)
                 break
 
         if len(issue_list) >0:
@@ -45,6 +50,7 @@ class GitIctv():
                 message = message.split("\n")[0]
                 commit_list.append({'author': commits[commit].author.name, 'message': message, "created_at": commits[commit].commit.author.date.strftime("%d %B %Y %H:%M"), 'avatar_url':commits[commit].author.avatar_url })
             except Exception as e:
+                print(e)
                 break
 
         if len(commit_list) > 0:
@@ -75,5 +81,5 @@ class GitIctv():
 
 if __name__ == "__main__":
 
-    git = GitIctv("8f56162284548f2917b7fa22f9e8cc70e3279839", 'scala/scala', "scala")
-    print(git.get_commit(5))
+    git = GitIctv("8f56162284548f2917b7fa22f9e8cc70e3279839", 'odoo/odoo', "scala")
+    print(git.get_issue(5))
