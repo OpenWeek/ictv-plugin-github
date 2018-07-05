@@ -114,16 +114,25 @@ class GithubReaderSlide(PluginSlide):
     def __init__(self,repo_url,list, duration,mark = None):
         print("GithubReaderSlide")
         self._content = {}
-        self._content['title-1'] = {'text':repo_url.split('/')[1]}
-        self._content['subtitle-1'] = {'text': mark }
+        #self._content['title-1'] = {'text':repo_url.split('/')[1]}
+        self._content['title-1'] = {'text': 'Github activity'}
+        self._content['subtitle-1'] = {'text': list['name']}
         self._duration = duration
         i = 1
         if mark == 'organization':
             print(mark)
+            dispText = ''
+            print('before dispText')
             for repo in list['repos']:
-                self._content['text-'+str(i)] = {'text':list['name']+"<br>"+repo}
-                self._content['image-'+str(i)] = {'src':list['avatar-url']}
+                dispText += repo+'<br>'
+                print(dispText)
                 i += 1
+            self._content['text-'+str(1)] = {'text': dispText}
+            self._content['image-'+str(1)] = {'src': list['avatar-url']}
+            #for repo in list['repos']:
+            #    self._content['text-'+str(i)] = {'text':list['name']+"<br>"+repo}
+            #    self._content['image-'+str(i)] = {'src':list['avatar-url']}
+            #    i += 1
         else:
             for elem in list:
                 #if mark == 'stat': #TODO
@@ -156,6 +165,7 @@ class GithubReaderSlide(PluginSlide):
                 else:
                     break #raise an error unknown mark (or None mark)
                 i += 1
+        self._content['background-1']={'src': 'plugins/github_reader/github-background.png', 'size': 'cover'}
 
 
     def get_duration(self):

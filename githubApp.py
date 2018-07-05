@@ -65,7 +65,7 @@ class GitIctv():
     def get_organization(self, number_organizations):
         if (self.organization):
             repos_organization = []
-            repos = [e for e in self.organization.get_repos()]
+            repos = [e for e in self.organization.get_repos()] #easier to print repos, makes a list from a Paginated list(which has not a suitable print function)
 
             print(repos)
             sorted_repos = sorted(repos, reverse=True, key=lambda k: k.updated_at)
@@ -74,7 +74,7 @@ class GitIctv():
                 repo = sorted_repos[count]
                 print(repo,repo.updated_at)
                 print(repo.full_name.split('/')[1])
-                repos_organization.append(repo.full_name.split('/')[1])
+                repos_organization.append('<B>'+repo.full_name.split('/')[1]+'</B>'+' updated at : ' + repo.updated_at.strftime("%d %B %Y %H:%M")) #TODO if datetime = vide ??
 
             return {"avatar-url": self.organization.avatar_url, "name": self.organization.name, "repos":repos_organization}
         else:
