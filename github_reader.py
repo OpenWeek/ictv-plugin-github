@@ -51,8 +51,8 @@ def get_content(channel_id):
         capsule._slides.append(GithubReaderSlideCommit(repo_url, number_commits, duration, git_obj))
     if disp_releases:
         release_list = git_obj.get_release()
-    #if disp_contributors:
-    #    contributor_list = git_obj.get_contributor()
+    if disp_contributors:
+        contributor_list = git_obj.get_contributor(repo_url,number_contributors,duration,git_obj)
     if had_organization:
         capsule._slides.append(GithubReaderSlideOrganization(orga_url, number_organizations, duration, git_obj))
 
@@ -150,8 +150,22 @@ class GithubReaderSlideCommit(GithubReaderSlide):
 
 class GithubReaderSlideRelease():
   pass
-class GithubReaderSlideContributor():
-  pass
+class GithubReaderSlideContributor(GithubReaderSlide):
+    def __init__(self,repo_url,number_contributors,duration,git_obj)
+        self._content = {}
+        self._content['title-1'] = {'text':repo_url.split('/')[1]}
+        self._content['subtitle-1'] = {'text': 'Week\'s '+str(number_contributors)+' most contributors'}
+        self._duration = duration
+
+        contributors = git_obj.get_repo(repo_url).get_stats_contributors()
+        for i,contributor in enumerate(contributors[:nb_elem]):
+            try:
+                self._content['text-'+str(i+1)] = {'text': contributors.author+"<br>"+"# commits lines : "+str(contributor.total)}
+          	except Exception as e:
+                logger.warning('Missing contributor attibuts', extra=logger_extra)
+            self._content['image-'+str(i+1)] = {'src': contributor.author.avatar_url}
+        self._content['background-1']={'src': 'plugins/github_reader/github-background.png', 'color': 'black', 'size': 'content'}
+
 class GithubReaderSlideOrganization(GithubReaderSlide):
     def __init__(self, orga_url, number_organizations, duration, git_obj):
         #git_obj = Github(token)
