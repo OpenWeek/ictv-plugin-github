@@ -115,11 +115,13 @@ class GithubReaderSlide(PluginSlide):
         print("GithubReaderSlide")
         self._content = {}
         #self._content['title-1'] = {'text':repo_url.split('/')[1]}
-        self._content['title-1'] = {'text': 'Github activity'}
-        self._content['subtitle-1'] = {'text': list['name']}
+        self._content['title-1'] = {'text': 'title'}
+        self._content['subtitle-1'] = {'text': 'subtitle'}
         self._duration = duration
         i = 1
         if mark == 'organization':
+            self._content['title-1'] = {'text': 'Github activity'}
+            self._content['subtitle-1'] = {'text': list['name']}
             print(mark)
             dispText = ''
             print('before dispText')
@@ -142,9 +144,9 @@ class GithubReaderSlide(PluginSlide):
                 print(mark)
                 if mark == 'issue':
                     if elem['state'] == 'open':
-                        self._content['text-'+str(i)] = {'text': elem['title']+"<br>state : "+elem['state']+"<br>"+elem['comments']}
+                        self._content['text-'+str(i)] = {'text': elem['title']+"<br>state : "+"<font color = \"green\">"+elem['state']+"</font>"+"<br>"+elem['comments']}
                     elif elem['state'] == 'closed':
-                        self._content['text-'+str(i)] = {'text': elem['title']+"<br>state : "+elem['state']+"closed at : "+elem['closed_at']+"<br>"+elem['comments']}
+                        self._content['text-'+str(i)] = {'text': elem['title']+"<br>state : "+"<font color = \"red\">"+"closed at : "+"</font>"+elem['closed_at']+"<br>"+elem['comments']}
                     #else TODO, undefined ?
                     self._content['image-'+str(i)] = {'src': elem['avatar_url']}
                 elif mark == 'commit':
@@ -165,7 +167,7 @@ class GithubReaderSlide(PluginSlide):
                 else:
                     break #raise an error unknown mark (or None mark)
                 i += 1
-        self._content['background-1']={'src': 'plugins/github_reader/github-background.png', 'size': 'cover'}
+        self._content['background-1']={'src': 'plugins/github_reader/github-background.png', 'color': 'black', 'size': 'content'}
 
 
     def get_duration(self):
