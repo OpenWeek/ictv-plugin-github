@@ -165,12 +165,15 @@ class GithubReaderSlideRelease(GithubReaderSlide):
         print(releases)
         if(not releases):
             logger.warning('no release', extra=logger_extra)
+        #print(releases.totalCount)
         for i,release in enumerate(releases[:number_releases]):
+            print("i'm in !")
             name = release.author.name
             if(not name):
                 name = "Undefined"
             self._content['text-'+str(i+1)] = {'text': release.title+" released on "+release.created_at.strftime("%d %B %Y %H:%M")+" by "+name+" version "+release.tag_name}
             self._content['image-'+str(i+1)] = {'src': ''}
+        print('after for')
         if('text-1' not in self._content):
             self._content['text-'+str(1)] = {'text': 'There is no release'}
             self._content['image-'+str(1)] = {'src': 'plugins/github_reader/mfcry.png'}
@@ -185,14 +188,21 @@ class GithubReaderSlideContributor(GithubReaderSlide):
         self._duration = duration
 
         contributors = git_obj.get_repo(repo_url).get_stats_contributors()
-        for i,contributor in enumerate(contributors[:nb_elem]):
+        sorted_contributors = sorted(contributors, reverse=True, key=lambda k: k.weeks[-1].c)
+        for i,contributor in enumerate(sorted_contributors[:number_contributors]):
+            print(contributor.weeks[-1].w.strftime("%d %B %Y %H:%M"))
+            print('it :'+str(i))
             try:
-                self._content['text-'+str(i+1)] = {'text': contributors.author+"<br>"+"# commits lines : "+str(contributor.total)}
+                name = contributor.author.name
+                if(not name):
+                    name = 'Undefined'
+                self._content['text-'+str(i+1)] = {'text': name+"<br>"+"# commits : "+str(contributor.weeks[-1].c)}
             except Exception as e:
-                logger.warning('Missing contributor attibuts', extra=logger_extra)
+                print('except')
+                #logger.warning('Missing contributor attibuts', extra=logger_extra)
             self._content['image-'+str(i+1)] = {'src': contributor.author.avatar_url}
+        self._content['subtitle-1'] = {'text': 'Best contributors since '+sorted_contributors[0].weeks[-1].w.strftime("%d %B %Y %H:%M")}
         self._content['background-1']={'src': 'plugins/github_reader/github-background.png', 'color': 'black', 'size': 'content'}
-
 class GithubReaderSlideOrganization(GithubReaderSlide):
     def __init__(self, orga_url, number_organizations, duration, git_obj,logger,logger_extra):
         if not orga_url:
