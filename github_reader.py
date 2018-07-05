@@ -6,7 +6,6 @@ from ictv.plugin_manager.plugin_slide import PluginSlide
 from ictv.plugin_manager.plugin_utils import MisconfiguredParameters
 import json
 import urllib.request
-from ictv.plugins.github_reader.githubApp import GitIctv
 from github import Github
 
 def get_content(channel_id):
@@ -32,6 +31,7 @@ def get_content(channel_id):
     number_issues = channel.get_config_param('number_issues')
     disp_stat = channel.get_config_param('disp_stat')
     disp_releases = channel.get_config_param('disp_releases')
+    number_releases = channel.get_config_param('number_releases')
     print("After variable")
     if not token or not repo_url:
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
@@ -50,7 +50,7 @@ def get_content(channel_id):
     if disp_commits:
         capsule._slides.append(GithubReaderSlideCommit(repo_url, number_commits, duration, git_obj))
     if disp_releases:
-        release_list = git_obj.get_release()
+        capsule._slides.append(GithubReaderSlideRelease(repo_url, number_releases, duration, git_obj))
     #if disp_contributors:
     #    contributor_list = git_obj.get_contributor()
     if had_organization:
@@ -126,7 +126,7 @@ class GithubReaderSlideCommit(GithubReaderSlide):
             commit_list.append({'author': name, 'message': message, "created_at": commit.commit.author.date.strftime("%d %B %Y %H:%M"), 'avatar_url':commit.author.avatar_url})
         	#TODO SEE IF MORE THAN 0 COMMITS
         self._content = {}
-        self._content['title-1'] = {'text':repo_url.split('/')[1]}
+        self._content['title-1'] = {'text': repo_url.split('/')[1]}
         self._content['subtitle-1'] = {'text': "Commits"}
         self._duration = duration
         i = 1
@@ -148,10 +148,37 @@ class GithubReaderSlideCommit(GithubReaderSlide):
 
 
 
-class GithubReaderSlideRelease():
-  pass
+class GithubReaderSlideRelease(GithubReaderSlide):
+    def __init__(self, repo_url, number_releases, duration, git_obj):
+        print('GithubReaderSlideRelease')
+        self._content = {}
+        self._content['title-1'] = {'text': repo_url.split('/')[1]}
+        self._content['subtitle-1'] = {'text': 'Recent releases'}
+        self._duration = duration
+        repo = git_obj.get_repo(repo_url)
+        releases = repo.get_releases()
+        print('after releases')
+        print(releases)
+        if(not releases):
+            print('EMPTY RELEASES !!!!')
+        print(releases.totalCount)
+        for i,release in enumerate(releases[:number_releases]):
+            print(release)
+            print('it : '+str(i))
+            name = release.author.name
+            if(not name):
+                name = "Undefined"
+            self._content['text-'+str(i+1)] = {'text': release.title+" released on "+release.created_at.strftime("%d %B %Y %H:%M")+" by "+name+" version "+release.tag_name}
+            self._content['image-'+str(i+1)] = {'src': ''}
+        if('text-1' not in self._content):
+            self._content['text-'+str(1)] = {'text': 'There is no releases'}
+            self._content['image-'+str(1)] = {'src': 'plugins/github_reader/mfcry.png'}
+        self._content['background-1']={'src': 'plugins/github_reader/github-background.png', 'color': 'black', 'size': 'content'}
+
+
+
 class GithubReaderSlideContributor():
-  pass
+    pass
 class GithubReaderSlideOrganization(GithubReaderSlide):
     def __init__(self, orga_url, number_organizations, duration, git_obj):
         #git_obj = Github(token)
