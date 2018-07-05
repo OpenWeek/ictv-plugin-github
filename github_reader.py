@@ -11,20 +11,15 @@ from github import Github
 from datetime import datetime, timedelta
 
 def get_content(channel_id):
-    print("get_content")
     channel = PluginChannel.get(channel_id)
-    print("after channel")
     logger_extra = {'channel_name': channel.name, 'channel_id': channel.id}
     logger = get_logger('github_reader', channel)
-    print("after get_logger")
     token = channel.get_config_param('token')
-    print("before duration")
     duration = channel.get_config_param('duration')*1000
     repo_url = channel.get_config_param('repo_url')
     had_organization = channel.get_config_param('had_organization')
     number_organizations = channel.get_config_param('number_organizations')
     orga_url = channel.get_config_param('orga_url')
-    print("after orga_url")
     disp_commits = channel.get_config_param('disp_commits')
     number_commits = channel.get_config_param('number_commits')
     disp_contributors = channel.get_config_param('disp_contributors')
@@ -33,16 +28,13 @@ def get_content(channel_id):
     number_issues = channel.get_config_param('number_issues')
     disp_stat = channel.get_config_param('disp_stat')
     disp_releases = channel.get_config_param('disp_releases')
-    print("After variable")
     if not token or not repo_url:
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
         return []
-    print("After token")
 
     git_obj = Github(token)
     capsule = GithubReaderCapsule()
 
-    print("After init gitIctv")
 
     #if disp_stat:
     #    stat = git_obj.get_stat()
@@ -57,7 +49,6 @@ def get_content(channel_id):
     if had_organization:
         capsule._slides.append(GithubReaderSlideOrganization(orga_url, number_organizations, duration, git_obj,logger,logger_extra))
 
-    print("BeforeReturn")
 
     return [capsule]
 
@@ -186,17 +177,17 @@ class GithubReaderSlideContributor(GithubReaderSlide):
 
 class GithubReaderSlideOrganization(GithubReaderSlide):
     def __init__(self, orga_url, number_organizations, duration, git_obj,logger,logger_extra):
-        #git_obj = Github(token)
+        if not orga_url:
+            logger.warning('No oraganisation provide', extra=logger_extra)
         organization = git_obj.get_organization(orga_url)
-        # et si organization n'existe pas ???? TODO
+        if not oraganisation:
+            logger.warning('No oraganisation found', extra=logger_extra)
 
         repos_organization = []
 
         repos = [e for e in organization.get_repos()] #easier to print repos, makes a list from a Paginated list(which has not a suitable print function)
 
-        print(repos)
         sorted_repos = sorted(repos, reverse=True, key=lambda k: k.updated_at)
-        print(sorted_repos)
         for repo in sorted_repos[:number_organizations]:
             repos_organization.append('<p font-weigth = "900">'+repo.full_name.split('/')[1]+'</p>'+' updated at : ' + repo.updated_at.strftime("%d %B %Y %H:%M")) #TODO if datetime = vide ??
 
@@ -206,13 +197,10 @@ class GithubReaderSlideOrganization(GithubReaderSlide):
         self._content['title-1'] = {'text': 'Last modified repos'}
         self._content['subtitle-1'] = {'text': organization.name}
         self._duration = duration
-        print('organization')
         dispText = ''
-        print('before dispText')
         i = 1
         for repo in repos_organization:
             dispText += repo+'<br>'
-            print(dispText)
             i += 1
         self._content['text-'+str(1)] = {'text': dispText}
         self._content['image-'+str(1)] = {'src': organization.avatar_url}
