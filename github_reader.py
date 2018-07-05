@@ -38,12 +38,14 @@ def get_content(channel_id):
     orga_url = channel.get_config_param('orga_url')
     disp_commits = channel.get_config_param('disp_commits')
     number_commits = channel.get_config_param('number_commits')
+    max_days_commit = channel.get_config_param('max_days_commit')
     disp_contributors = channel.get_config_param('disp_contributors')
     number_contributors = channel.get_config_param('number_contributors')
     disp_issues = channel.get_config_param('disp_issues')
     number_issues = channel.get_config_param('number_issues')
     disp_stat = channel.get_config_param('disp_stat')
     disp_releases = channel.get_config_param('disp_releases')
+    number_releases = channel.get_config_param('number_releases')
     if not token or not repo_url:
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
         return []
@@ -57,11 +59,11 @@ def get_content(channel_id):
     if disp_issues:
         capsule._slides.append(GithubReaderSlideIssue(repo_url, number_issues, duration, git_obj,logger,logger_extra))
     if disp_commits:
-        capsule._slides.append(GithubReaderSlideCommit(repo_url, number_commits, duration, git_obj,logger,logger_extra))
+        capsule._slides.append(GithubReaderSlideCommit(repo_url, number_commits, duration, git_obj,max_days_commit,logger,logger_extra))
     if disp_releases:
-        release_list = git_obj.get_release()
+        capsule._slides.append(GithubReaderSlideRelease(repo_url, number_releases, duration, git_obj,logger,logger_extra))
     if disp_contributors:
-        contributor_list = git_obj.get_contributor(repo_url,number_contributors,duration,git_obj,logger,logger_extra)
+        capsule._slides.append(GithubReaderSlideContributor(repo_url, number_contributors, duration, git_obj,logger,logger_extra))
     if had_organization:
         capsule._slides.append(GithubReaderSlideOrganization(orga_url, number_organizations, duration, git_obj,logger,logger_extra))
 
@@ -129,7 +131,7 @@ class GithubReaderSlideIssue(GithubReaderSlide):
         self._content['background-1']={'src': 'plugins/github_reader/github-background.png', 'color': 'black', 'size': 'content'}
 
 class GithubReaderSlideCommit(GithubReaderSlide):
-    def __init__(self, repo_url, number_of_commits, duration, git_obj,logger,logger_extra):
+    def __init__(self, repo_url, number_of_commits, duration, git_obj,max_days,logger,logger_extra):
         repo = git_obj.get_repo(repo_url)
         commits = repo.get_commits()
         commit_list = []
