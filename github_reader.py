@@ -144,8 +144,30 @@ class GithubReaderSlideCommit(GithubReaderSlide):
             i += 1
         self._content['background-1']={'src': 'plugins/github_reader/github-background.png', 'color': 'black', 'size': 'content'}
 
-class GithubReaderSlideRelease():
-  pass
+class GithubReaderSlideRelease(GithubReaderSlide):
+    def __init__(self, repo_url, number_releases, duration, git_obj,logger,logger_extra):
+        print('GithubReaderSlideRelease')
+        self._content = {}
+        self._content['title-1'] = {'text': repo_url.split('/')[1]}
+        self._content['subtitle-1'] = {'text': 'Recent releases'}
+        self._duration = duration
+        repo = git_obj.get_repo(repo_url)
+        releases = repo.get_releases()
+        print(releases)
+        if(not releases):
+            logger.warning('no release', extra=logger_extra)
+        for i,release in enumerate(releases[:number_releases]):
+            name = release.author.name
+            if(not name):
+                name = "Undefined"
+            self._content['text-'+str(i+1)] = {'text': release.title+" released on "+release.created_at.strftime("%d %B %Y %H:%M")+" by "+name+" version "+release.tag_name}
+            self._content['image-'+str(i+1)] = {'src': ''}
+        if('text-1' not in self._content):
+            self._content['text-'+str(1)] = {'text': 'There is no release'}
+            self._content['image-'+str(1)] = {'src': 'plugins/github_reader/mfcry.png'}
+        self._content['background-1']={'src': 'plugins/github_reader/github-background.png', 'color': 'black', 'size': 'content'}
+
+
 class GithubReaderSlideContributor(GithubReaderSlide):
     def __init__(self,repo_url,number_contributors,duration,git_obj,logger,logger_extra)
         self._content = {}
@@ -176,11 +198,6 @@ class GithubReaderSlideOrganization(GithubReaderSlide):
         sorted_repos = sorted(repos, reverse=True, key=lambda k: k.updated_at)
         print(sorted_repos)
         for repo in sorted_repos[:number_organizations]:
-        #for count in range(number_organizations):
-        #    repo = sorted_repos[count]
-            print(repo,repo.updated_at)
-            print(repo.full_name.split('/')[1])
-            # FORMAT TODO
             repos_organization.append('<p font-weigth = "900">'+repo.full_name.split('/')[1]+'</p>'+' updated at : ' + repo.updated_at.strftime("%d %B %Y %H:%M")) #TODO if datetime = vide ??
 
         dico = {"avatar-url": organization.avatar_url, "name": organization.name, "repos":repos_organization}
