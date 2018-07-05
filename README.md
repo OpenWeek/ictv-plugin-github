@@ -1,7 +1,7 @@
 # Github Reader ICTV Plugin
 
 The Github Reader is a plugin for the ICTV Software
-It displays informations about a GitHub repository/organization such as the number of commits, the top contributors, the opened and closed issues and the releases.
+It displays informations about a GitHub repository/organization such as the number of commits, the top contributors, issues and the releases.
 
 #About ICTV
 "ICTV is a simple content management system for digital signage on multiple screens.
