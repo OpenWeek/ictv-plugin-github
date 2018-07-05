@@ -27,6 +27,7 @@ def get_content(channel_id):
     print("after orga_url")
     disp_commits = channel.get_config_param('disp_commits')
     number_commits = channel.get_config_param('number_commits')
+    max_days_commit = channel.get_config.param('max_days_commit')
     disp_contributors = channel.get_config_param('disp_contributors')
     number_contributors = channel.get_config_param('number_contributors')
     disp_issues = channel.get_config_param('disp_issues')
@@ -49,7 +50,7 @@ def get_content(channel_id):
     if disp_issues:
         capsule._slides.append(GithubReaderSlideIssue(repo_url, number_issues, duration, git_obj))
     if disp_commits:
-        capsule._slides.append(GithubReaderSlideCommit(repo_url, number_commits, duration, git_obj))
+        capsule._slides.append(GithubReaderSlideCommit(repo_url, number_commits, duration,max_days_commit, git_obj))
     if disp_releases:
         release_list = git_obj.get_release()
     if disp_contributors:
@@ -62,7 +63,6 @@ def get_content(channel_id):
     return [capsule]
 
 def is_uptodate(date_object, day):
-    day = 3
     now = datetime.now()
     duration_of_days = timedelta(days=day)
 
@@ -123,7 +123,7 @@ class GithubReaderSlideIssue(GithubReaderSlide):
 
 #=====================================FLO
 class GithubReaderSlideCommit(GithubReaderSlide):
-    def __init__(self, repo_url, number_of_commits, duration, git_obj):
+    def __init__(self, repo_url, number_of_commits, duration, max_days, git_obj):
         repo = git_obj.get_repo(repo_url)
         commits = repo.get_commits()
         commit_list = []
@@ -131,9 +131,13 @@ class GithubReaderSlideCommit(GithubReaderSlide):
             message = commit.commit.message
             message = message.split("\n")[0]
             name = commit.author.name
+            created_at = commit.commit.author.datetime
+
             if(not name):
                 name = "Undefined"
-            commit_list.append({'author': name, 'message': message, "created_at": commit.commit.author.date.strftime("%d %B %Y %H:%M"), 'avatar_url':commit.author.avatar_url})
+
+            if(is_uptodate(created_at, max_days)):
+                commit_list.append({'author': name, 'message': message, "created_at": commit.commit.author.date.strftime("%d %B %Y %H:%M"), 'avatar_url':commit.author.avatar_url})
         	#TODO SEE IF MORE THAN 0 COMMITS
         self._content = {}
         self._content['title-1'] = {'text':repo_url.split('/')[1]}
