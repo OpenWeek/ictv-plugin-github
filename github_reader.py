@@ -8,6 +8,7 @@ import json
 import urllib.request
 from ictv.plugins.github_reader.githubApp import GitIctv
 from github import Github
+from datetime import datetime, timedelta
 
 def get_content(channel_id):
     print("get_content")
@@ -59,6 +60,15 @@ def get_content(channel_id):
     print("BeforeReturn")
 
     return [capsule]
+
+def is_uptodate(date_object, day):
+    day = 3
+    now = datetime.now()
+    duration_of_days = timedelta(days=day)
+
+    date_limit = now - duration_of_days
+    return date_object < date_limit
+
 
 class GithubReaderCapsule(PluginCapsule):
 
