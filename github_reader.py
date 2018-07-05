@@ -23,7 +23,6 @@ from ictv.plugin_manager.plugin_slide import PluginSlide
 from ictv.plugin_manager.plugin_utils import MisconfiguredParameters
 import json
 import urllib.request
-from ictv.plugins.github_reader.githubApp import GitIctv
 from github import Github
 from datetime import datetime, timedelta
 
@@ -58,7 +57,7 @@ def get_content(channel_id):
     if disp_issues:
         capsule._slides.append(GithubReaderSlideIssue(repo_url, number_issues, duration, git_obj,logger,logger_extra))
     if disp_commits:
-        capsule._slides.append(GithubReaderSlideCommit(repo_url, number_commits, duration, git_obj,,logger,logger_extra))
+        capsule._slides.append(GithubReaderSlideCommit(repo_url, number_commits, duration, git_obj,logger,logger_extra))
     if disp_releases:
         release_list = git_obj.get_release()
     if disp_contributors:
@@ -177,7 +176,7 @@ class GithubReaderSlideRelease(GithubReaderSlide):
 
 
 class GithubReaderSlideContributor(GithubReaderSlide):
-    def __init__(self,repo_url,number_contributors,duration,git_obj,logger,logger_extra)
+    def __init__(self,repo_url,number_contributors,duration,git_obj,logger,logger_extra):
         self._content = {}
         self._content['title-1'] = {'text':repo_url.split('/')[1]}
         self._content['subtitle-1'] = {'text': 'Week\'s '+str(number_contributors)+' most contributors'}
@@ -187,7 +186,7 @@ class GithubReaderSlideContributor(GithubReaderSlide):
         for i,contributor in enumerate(contributors[:nb_elem]):
             try:
                 self._content['text-'+str(i+1)] = {'text': contributors.author+"<br>"+"# commits lines : "+str(contributor.total)}
-          	except Exception as e:
+            except Exception as e:
                 logger.warning('Missing contributor attibuts', extra=logger_extra)
             self._content['image-'+str(i+1)] = {'src': contributor.author.avatar_url}
         self._content['background-1']={'src': 'plugins/github_reader/github-background.png', 'color': 'black', 'size': 'content'}
