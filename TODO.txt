@@ -1,0 +1,5 @@
+maximum de commit = 4 !!! trouver un meilleur moyen.
+FONT WEIGHT, font-weight
+uniformiser number_of_commits nb_commits number_commits
+LOGGER -> argument et utiliser logger ! remplacer les prints !!
+autre truc à uniformiser ??

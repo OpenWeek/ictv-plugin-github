@@ -41,6 +41,12 @@ channels_params:
     type: int
     default: 3
     min: 1
+  max_days_commit:
+    name: 'Show the commit not older than ... days'
+    placeholder: 'Show the commit not older than ... days'
+    type: int
+    default: 30
+    min: 1
   disp_contributors:
     name: 'Display contributors'
     type: bool
@@ -48,7 +54,7 @@ channels_params:
   number_contributors:
     name: 'Number of contributors on each slide'
     placeholder: 'Number of contributors'
-    type: string
+    type: int
     default: 3
     min: 1
   disp_issues:
