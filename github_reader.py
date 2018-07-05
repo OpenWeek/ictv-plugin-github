@@ -139,23 +139,28 @@ class GithubReaderSlideCommit(GithubReaderSlide):
             if(is_uptodate(created_at, max_days)):
                 commit_list.append({'author': name, 'message': message, "created_at": commit.commit.author.date.strftime("%d %B %Y %H:%M"), 'avatar_url':commit.author.avatar_url})
         	#TODO SEE IF MORE THAN 0 COMMITS
-        self._content = {}
-        self._content['title-1'] = {'text':repo_url.split('/')[1]}
-        self._content['subtitle-1'] = {'text': "Commits"}
-        self._duration = duration
-        i = 1
-        for elem in commit_list:
-            print("commit")
-            print("it : "+str(i))
-            print(elem['message'])
-            print(elem['author'])
-            print(elem['created_at'])
-            print(elem['avatar_url'])
-            self._content['text-'+str(i)] = {'text': elem['author']+"<br>created at : "+elem['created_at']+"<br>"+elem['message']}
-            self._content['image-'+str(i)] = {'src': elem['avatar_url']}
-            i += 1
-        self._content['background-1']={'src': 'plugins/github_reader/github-background.png', 'color': 'black', 'size': 'content'}
-
+            if(len(commit_list) > 0):
+                self._content = {}
+                self._content['title-1'] = {'text':repo_url.split('/')[1]}
+                self._content['subtitle-1'] = {'text': "Commits"}
+                self._duration = duration
+                i = 1
+                for elem in commit_list:
+                    print("commit")
+                    print("it : "+str(i))
+                    print(elem['message'])
+                    print(elem['author'])
+                    print(elem['created_at'])
+                    print(elem['avatar_url'])
+                    self._content['text-'+str(i)] = {'text': elem['author']+"<br>created at : "+elem['created_at']+"<br>"+elem['message']}
+                    self._content['image-'+str(i)] = {'src': elem['avatar_url']}
+                    i += 1
+                self._content['background-1']={'src': 'plugins/github_reader/github-background.png', 'color': 'black', 'size': 'content'}
+            else:
+                self._content = {}
+                self._duration = duration
+                self._content['text-1'] = {'text': "There is no new commit"}
+                self._content['image-1'] = {'src': "plugins/github_reader/mfcry.png"}
 
 #=====================================END FLO
 
