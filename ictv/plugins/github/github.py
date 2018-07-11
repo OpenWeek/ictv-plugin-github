@@ -149,31 +149,19 @@ class GithubReaderSlideIssue(GithubReaderSlide):
 
 class GithubReaderSlideCommit(GithubReaderSlide):
     def __init__(self, repo_url, number_commits, duration, git_obj, max_days, logger, logger_extra):
-        repo = git_obj.get_repo(repo_url)
-        commits = repo.get_commits()
-        commit_list = []
-        for commit in commits[:number_commits]:
-            message = commit.commit.message
-            message = message.split("\n")[0]
-            name = commit.author.name
-            if not name:
-                name = "Undefined"
-            commit_list.append({
-                'author': name, 'message': message, "created_at": get_date_str(commit.commit.author.date),
-                 'avatar_url': commit.author.avatar_url
-            })
-
-        self._content = {'title-1': {'text': repo_url.split('/')[1]}, 'subtitle-1': {'text': "Commits"}}
+        self._content = {'title-1': {'text': repo_url.split('/')[1]}, 'subtitle-1': {'text': "Commits"},
+                         'background-1': {'src': 'plugins/github/github-background.png', 'color': 'black',
+                                          'size': 'content'}}
         self._duration = duration
-        i = 1
-        for elem in commit_list:
-            self._content['text-' + str(i)] = {
-                'text': '{}<br>created on {}<br>{}'.format(elem['author'], elem['created_at'], elem['message'])
+
+        repo = git_obj.get_repo(repo_url)
+        for i, commit in enumerate(repo.get_commits()[:number_commits]):
+            message = commit.commit.message.split("\n")[0]
+            name = commit.author.name or commit.author.login
+            self._content['text-' + str(i+1)] = {
+                'text': '{}<br>created on {}<br>{}'.format(name, get_date_str(commit.commit.author.date), message)
             }
-            self._content['image-' + str(i)] = {'src': elem['avatar_url']}
-            i += 1
-        self._content['background-1'] = {'src': 'plugins/github/github-background.png', 'color': 'black',
-                                         'size': 'content'}
+            self._content['image-' + str(i+1)] = {'src': commit.author.avatar_url}
 
 
 class GithubReaderSlideRelease(GithubReaderSlide):
