@@ -2,20 +2,20 @@
 #
 #    Written by Dardenne Florent, Fiset Alexandre, Gobeaux Alexandre
 #
-#    ICTV github-reader is free plugin software: you can redistribute it and/or modify
+#    ICTV-plugin-github is free plugin software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as published
 #    by the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
-#    ICTV github-reader is distributed in the hope that it will be useful,
+#    ICTV-plugin-github is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU Affero General Public License for more details.
 #
 #    You should have received a copy of the GNU Affero General Public License
-#    along with ICTV github-reader.  If not, see <http://www.gnu.org/licenses/>.
+#    along with ICTV-plugin-github.  If not, see <http://www.gnu.org/licenses/>.
 
-from github import Github
+from github import Github as GithubAPI
 from ictv.models.channel import PluginChannel
 from ictv.plugin_manager.plugin_capsule import PluginCapsule
 from ictv.plugin_manager.plugin_manager import get_logger
@@ -25,7 +25,7 @@ from ictv.plugin_manager.plugin_slide import PluginSlide
 def get_content(channel_id):
     channel = PluginChannel.get(channel_id)
     logger_extra = {'channel_name': channel.name, 'channel_id': channel.id}
-    logger = get_logger('github_reader', channel)
+    logger = get_logger('github', channel)
     token = channel.get_config_param('token')
     duration = channel.get_config_param('duration') * 1000
     repo_url = channel.get_config_param('repo_url')
@@ -46,7 +46,7 @@ def get_content(channel_id):
         logger.warning('Some of the required parameters are empty', extra=logger_extra)
         return []
 
-    git_obj = Github(token)
+    git_obj = GithubAPI(token)
     capsule = GithubReaderCapsule()
 
     if disp_issues:
@@ -118,7 +118,7 @@ class GithubReaderSlideIssue(GithubReaderSlide):
                 except Exception as e:
                     logger.warning('None state issue', extra=logger_extra)
             self._content['image-' + str(i + 1)] = {'src': issue.user.avatar_url}
-        self._content['background-1'] = {'src': 'plugins/github_reader/github-background.png', 'color': 'black',
+        self._content['background-1'] = {'src': 'plugins/github/github-background.png', 'color': 'black',
                                          'size': 'content'}
 
 
@@ -147,7 +147,7 @@ class GithubReaderSlideCommit(GithubReaderSlide):
             }
             self._content['image-' + str(i)] = {'src': elem['avatar_url']}
             i += 1
-        self._content['background-1'] = {'src': 'plugins/github_reader/github-background.png', 'color': 'black',
+        self._content['background-1'] = {'src': 'plugins/github/github-background.png', 'color': 'black',
                                          'size': 'content'}
 
 
@@ -175,8 +175,8 @@ class GithubReaderSlideRelease(GithubReaderSlide):
         print('after for')
         if 'text-1' not in self._content:
             self._content['text-' + str(1)] = {'text': 'There is no release'}
-            self._content['image-' + str(1)] = {'src': 'plugins/github_reader/mfcry.png'}
-        self._content['background-1'] = {'src': 'plugins/github_reader/github-background.png', 'color': 'black',
+            self._content['image-' + str(1)] = {'src': 'plugins/github/mfcry.png'}
+        self._content['background-1'] = {'src': 'plugins/github/github-background.png', 'color': 'black',
                                          'size': 'content'}
 
 
@@ -203,7 +203,7 @@ class GithubReaderSlideContributor(GithubReaderSlide):
             self._content['image-' + str(i + 1)] = {'src': contributor.author.avatar_url}
         self._content['subtitle-1'] = {
             'text': 'Best contributors since ' + sorted_contributors[0].weeks[-1].w.strftime("%d %B %Y %H:%M")}
-        self._content['background-1'] = {'src': 'plugins/github_reader/github-background.png', 'color': 'black',
+        self._content['background-1'] = {'src': 'plugins/github/github-background.png', 'color': 'black',
                                          'size': 'content'}
 
 
@@ -235,5 +235,5 @@ class GithubReaderSlideOrganization(GithubReaderSlide):
             i += 1
         self._content['text-' + str(1)] = {'text': dispText}
         self._content['image-' + str(1)] = {'src': organization.avatar_url}
-        self._content['background-1'] = {'src': 'plugins/github_reader/github-background.png', 'color': 'black',
+        self._content['background-1'] = {'src': 'plugins/github/github-background.png', 'color': 'black',
                                          'size': 'content'}
