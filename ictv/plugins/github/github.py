@@ -208,7 +208,13 @@ class GithubReaderSlideContributor(GithubReaderSlide):
         sorted_contributors = sorted(contributors, reverse=True, key=lambda k: k.weeks[-1].c)
         for i, contributor in enumerate(sorted_contributors[:number_contributors]):
             name = contributor.author.name or contributor.author.login
-            self._content['text-' + str(i + 1)] = {'text': name + "<br>" + "# commits : " + str(contributor.weeks[-1].c)}
+            week_contribution = contributor.weeks[-1]
+            if week_contribution.c == 0:
+                break
+            self._content['text-' + str(i + 1)] = {
+                'text': '{}<br># commits: {}<br><span style="color: green">+{}</span>&nbsp;&nbsp;<span style="color: '
+                        'red;">-{}</span>'.format(name, week_contribution.c, week_contribution.a, week_contribution.d)
+            }
             self._content['image-' + str(i + 1)] = {'src': contributor.author.avatar_url}
         self._content['subtitle-1'] = {
             'text': 'Best contributors since ' + get_date_str(sorted_contributors[0].weeks[-1].w, date_format='%d %B %Y')}
