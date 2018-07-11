@@ -173,17 +173,13 @@ class GithubReaderSlideCommit(GithubReaderSlide):
 
 class GithubReaderSlideRelease(GithubReaderSlide):
     def __init__(self, repo_url, number_releases, duration, git_obj, logger, logger_extra):
-        print('GithubReaderSlideRelease')
         self._content = {'title-1': {'text': repo_url.split('/')[1]}, 'subtitle-1': {'text': 'Recent releases'}}
         self._duration = duration
         repo = git_obj.get_repo(repo_url)
         releases = repo.get_releases()
-        print(releases)
         if not releases:
             logger.warning('no release', extra=logger_extra)
-        print(releases.totalCount)
         for i, release in enumerate(releases[:number_releases]):
-            print("i'm in !")
             name = release.author.name
             if not name:
                 name = "Undefined"
@@ -192,7 +188,6 @@ class GithubReaderSlideRelease(GithubReaderSlide):
                 .format(release.title,release.created_at.strftime("%d %B %Y %H:%M"), name, release.tag_name)
             }
             self._content['image-' + str(i + 1)] = {'src': ''}
-        print('after for')
         if 'text-1' not in self._content:
             raise NoContentError()
         self._content['background-1'] = {'src': 'plugins/github/github-background.png', 'color': 'black',
@@ -208,8 +203,6 @@ class GithubReaderSlideContributor(GithubReaderSlide):
         contributors = git_obj.get_repo(repo_url).get_stats_contributors()
         sorted_contributors = sorted(contributors, reverse=True, key=lambda k: k.weeks[-1].c)
         for i, contributor in enumerate(sorted_contributors[:number_contributors]):
-            print(contributor.weeks[-1].w.strftime("%d %B %Y %H:%M"))
-            print('it :' + str(i))
             name = contributor.author.name
             if not name:
                 name = 'Undefined'
@@ -234,8 +227,7 @@ class GithubReaderSlideOrganization(GithubReaderSlide):
 
         repos_organization = []
 
-        repos = [e for e in
-                 organization.get_repos()]  # easier to print repos, makes a list from a Paginated list(which has not a suitable print function)
+        repos = [e for e in organization.get_repos()]  # easier to print repos, makes a list from a Paginated list (which has not a suitable print function)
 
         sorted_repos = sorted(repos, reverse=True, key=lambda k: k.updated_at)
         for repo in sorted_repos[:number_organizations]:
