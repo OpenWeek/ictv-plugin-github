@@ -233,8 +233,8 @@ class GithubReaderSlideOrganization(GithubReaderSlide):
         sorted_repos = sorted(repos, reverse=True, key=lambda k: k.updated_at)
         for repo in sorted_repos[:number_organizations]:
             repos_organization.append(
-                '<p style=\"font-weight: 900;\">{}</p>updated on {}'
-                .format(repo.full_name.split('/')[1], get_date_str(repo.updated_at)))  # TODO if datetime = vide ??
+                '<p><p style=\"font-weight: 900;\">{}</p><i style="font-size: 80%;">{}</i><p>updated on {}'
+                .format(repo.full_name.split('/')[1], repo.description or '', get_date_str(repo.updated_at)))
 
         self._content = {'title-1': {'text': 'Last modified repos'}, 'subtitle-1': {'text': organization.name}}
         self._duration = duration
