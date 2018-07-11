@@ -103,7 +103,7 @@ class GithubReaderSlide(PluginSlide):
         return self._content
 
     def get_template(self) -> str:
-        return 'template-image-text-table'
+        return 'template-github'
 
     def __repr__(self):
         return str(self.__dict__)

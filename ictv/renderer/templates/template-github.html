@@ -19,7 +19,7 @@ $#
 $#    You should have received a copy of the GNU Affero General Public License
 $#    along with ICTV.  If not, see <http://www.gnu.org/licenses/>.
 
-$var name: Table with image and text
+$var name: Plugin github
 $var description: Adaptive template with a table containing images and texts
 $var bg: $:background(content=slide, number=1, editor_default="/static/plugins/editor/images/beach.jpg")
 $code:
@@ -48,7 +48,6 @@ $code:
 <div class="content bg-dark $template_id">
     $:title(content=slide, number=1, max_chars=25, editor_type="text", editor_placeholder="Title", editor_label="Title", editor_default="Title", editor_order="1")
     $:subtitle(content=slide, number=1, max_chars=130, editor_type="text", editor_placeholder="Subtitle", editor_label="Subtitle", editor_default="Subtitle", editor_order="2")
-
     <table>
         $for i in range(1, get_number_of_cells(slide) + 1):
             <tr>
