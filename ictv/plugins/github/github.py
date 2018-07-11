@@ -22,6 +22,10 @@ from ictv.plugin_manager.plugin_manager import get_logger
 from ictv.plugin_manager.plugin_slide import PluginSlide
 
 
+class NoContentError(ValueError):
+    pass
+
+
 def get_content(channel_id):
     channel = PluginChannel.get(channel_id)
     logger_extra = {'channel_name': channel.name, 'channel_id': channel.id}
@@ -50,19 +54,40 @@ def get_content(channel_id):
     capsule = GithubReaderCapsule()
 
     if disp_issues:
-        capsule.slides.append(GithubReaderSlideIssue(repo_url, number_issues, duration, git_obj, logger, logger_extra))
+        try:
+            capsule.slides.append(GithubReaderSlideIssue(repo_url, number_issues, duration, git_obj, logger, logger_extra))
+        except NoContentError:
+            pass
+        except:
+            logger.info('An exception occurred when generating the issues slide', exc_info=True)
     if disp_commits:
-        capsule.slides.append(
-            GithubReaderSlideCommit(repo_url, number_commits, duration, git_obj, max_days_commit, logger, logger_extra))
+        try:
+            capsule.slides.append(GithubReaderSlideCommit(repo_url, number_commits, duration, git_obj, max_days_commit, logger, logger_extra))
+        except NoContentError:
+            pass
+        except:
+            logger.info('An exception occurred when generating the commits slide', exc_info=True)
     if disp_releases:
-        capsule.slides.append(
-            GithubReaderSlideRelease(repo_url, number_releases, duration, git_obj, logger, logger_extra))
+        try:
+            capsule.slides.append(GithubReaderSlideRelease(repo_url, number_releases, duration, git_obj, logger, logger_extra))
+        except NoContentError:
+            pass
+        except:
+            logger.info('An exception occurred when generating the releases slide', exc_info=True)
     if disp_contributors:
-        capsule.slides.append(
-            GithubReaderSlideContributor(repo_url, number_contributors, duration, git_obj, logger, logger_extra))
+        try:
+            capsule.slides.append(GithubReaderSlideContributor(repo_url, number_contributors, duration, git_obj, logger, logger_extra))
+        except NoContentError:
+            pass
+        except:
+            logger.info('An exception occurred when generating the contributors slide', exc_info=True)
     if had_organization:
-        capsule.slides.append(
-            GithubReaderSlideOrganization(orga_url, number_organizations, duration, git_obj, logger, logger_extra))
+        try:
+            capsule.slides.append(GithubReaderSlideOrganization(orga_url, number_organizations, duration, git_obj, logger, logger_extra))
+        except NoContentError:
+            pass
+        except:
+            logger.info('An exception occurred when generating the organisation slide', exc_info=True)
 
     return [capsule]
 
@@ -112,11 +137,6 @@ class GithubReaderSlideIssue(GithubReaderSlide):
                 self._content['text-' + str(i + 1)] = {
                     'text': '{}<br><font color = \"red\">closed</font> on {}<br># comments : {}'
                     .format(issue.title, issue.created_at.strftime("%d %B %Y %H:%M"), str(issue.comments))}
-            else:
-                try:
-                    logger.warning('None state issue' + issue.title, extra=logger_extra)
-                except Exception as e:
-                    logger.warning('None state issue', extra=logger_extra)
             self._content['image-' + str(i + 1)] = {'src': issue.user.avatar_url}
         self._content['background-1'] = {'src': 'plugins/github/github-background.png', 'color': 'black',
                                          'size': 'content'}
@@ -174,8 +194,7 @@ class GithubReaderSlideRelease(GithubReaderSlide):
             self._content['image-' + str(i + 1)] = {'src': ''}
         print('after for')
         if 'text-1' not in self._content:
-            self._content['text-' + str(1)] = {'text': 'There is no release'}
-            self._content['image-' + str(1)] = {'src': 'plugins/github/mfcry.png'}
+            raise NoContentError()
         self._content['background-1'] = {'src': 'plugins/github/github-background.png', 'color': 'black',
                                          'size': 'content'}
 
@@ -191,15 +210,11 @@ class GithubReaderSlideContributor(GithubReaderSlide):
         for i, contributor in enumerate(sorted_contributors[:number_contributors]):
             print(contributor.weeks[-1].w.strftime("%d %B %Y %H:%M"))
             print('it :' + str(i))
-            try:
-                name = contributor.author.name
-                if not name:
-                    name = 'Undefined'
-                self._content['text-' + str(i + 1)] = {
-                    'text': name + "<br>" + "# commits : " + str(contributor.weeks[-1].c)}
-            except Exception as e:
-                print('except')
-                # logger.warning('Missing contributor attibuts', extra=logger_extra)
+            name = contributor.author.name
+            if not name:
+                name = 'Undefined'
+            self._content['text-' + str(i + 1)] = {
+                'text': name + "<br>" + "# commits : " + str(contributor.weeks[-1].c)}
             self._content['image-' + str(i + 1)] = {'src': contributor.author.avatar_url}
         self._content['subtitle-1'] = {
             'text': 'Best contributors since ' + sorted_contributors[0].weeks[-1].w.strftime("%d %B %Y %H:%M")}
@@ -211,9 +226,11 @@ class GithubReaderSlideOrganization(GithubReaderSlide):
     def __init__(self, orga_url, number_organizations, duration, git_obj, logger, logger_extra):
         if not orga_url:
             logger.warning('No organization provided', extra=logger_extra)
+            raise NoContentError()
         organization = git_obj.get_organization(orga_url)
         if not organization:
             logger.warning('No organization found', extra=logger_extra)
+            raise NoContentError()
 
         repos_organization = []
 
