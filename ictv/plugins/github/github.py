@@ -14,6 +14,7 @@
 #
 #    You should have received a copy of the GNU Affero General Public License
 #    along with ICTV-plugin-github.  If not, see <http://www.gnu.org/licenses/>.
+import datetime
 
 from github import Github as GithubAPI
 from ictv.models.channel import PluginChannel
@@ -24,6 +25,10 @@ from ictv.plugin_manager.plugin_slide import PluginSlide
 
 class NoContentError(ValueError):
     pass
+
+
+def get_date_str(d, date_format="%d %B %Y %H:%M"):
+    return d.replace(tzinfo=datetime.timezone.utc).astimezone(tz=None).strftime(date_format)
 
 
 def get_content(channel_id):
@@ -59,35 +64,35 @@ def get_content(channel_id):
         except NoContentError:
             pass
         except:
-            logger.info('An exception occurred when generating the issues slide', exc_info=True)
+            logger.info('An exception occurred when generating the issues slide', exc_info=True, extra=logger_extra)
     if disp_commits:
         try:
             capsule.slides.append(GithubReaderSlideCommit(repo_url, number_commits, duration, git_obj, max_days_commit, logger, logger_extra))
         except NoContentError:
             pass
         except:
-            logger.info('An exception occurred when generating the commits slide', exc_info=True)
+            logger.info('An exception occurred when generating the commits slide', exc_info=True, extra=logger_extra)
     if disp_releases:
         try:
             capsule.slides.append(GithubReaderSlideRelease(repo_url, number_releases, duration, git_obj, logger, logger_extra))
         except NoContentError:
             pass
         except:
-            logger.info('An exception occurred when generating the releases slide', exc_info=True)
+            logger.info('An exception occurred when generating the releases slide', exc_info=True, extra=logger_extra)
     if disp_contributors:
         try:
             capsule.slides.append(GithubReaderSlideContributor(repo_url, number_contributors, duration, git_obj, logger, logger_extra))
         except NoContentError:
             pass
         except:
-            logger.info('An exception occurred when generating the contributors slide', exc_info=True)
+            logger.info('An exception occurred when generating the contributors slide', exc_info=True, extra=logger_extra)
     if had_organization:
         try:
             capsule.slides.append(GithubReaderSlideOrganization(orga_url, number_organizations, duration, git_obj, logger, logger_extra))
         except NoContentError:
             pass
         except:
-            logger.info('An exception occurred when generating the organisation slide', exc_info=True)
+            logger.info('An exception occurred when generating the organisation slide', exc_info=True, extra=logger_extra)
 
     return [capsule]
 
@@ -131,12 +136,12 @@ class GithubReaderSlideIssue(GithubReaderSlide):
             if issue.state == 'open':
                 self._content['text-' + str(i + 1)] = {
                     'text': '{}<br><font color = \"#7FFF00\">opened</font> on {}<br># comments : {}'
-                    .format(issue.title, issue.created_at.strftime("%d %B %Y %H:%M"), str(issue.comments))
+                    .format(issue.title, get_date_str(issue.created_at), str(issue.comments))
                 }
             elif issue.state == 'closed':
                 self._content['text-' + str(i + 1)] = {
                     'text': '{}<br><font color = \"red\">closed</font> on {}<br># comments : {}'
-                    .format(issue.title, issue.created_at.strftime("%d %B %Y %H:%M"), str(issue.comments))}
+                    .format(issue.title, get_date_str(issue.created_at), str(issue.comments))}
             self._content['image-' + str(i + 1)] = {'src': issue.user.avatar_url}
         self._content['background-1'] = {'src': 'plugins/github/github-background.png', 'color': 'black',
                                          'size': 'content'}
@@ -154,7 +159,7 @@ class GithubReaderSlideCommit(GithubReaderSlide):
             if not name:
                 name = "Undefined"
             commit_list.append({
-                'author': name, 'message': message, "created_at": commit.commit.author.date.strftime("%d %B %Y %H:%M"),
+                'author': name, 'message': message, "created_at": get_date_str(commit.commit.author.date),
                  'avatar_url': commit.author.avatar_url
             })
 
@@ -163,7 +168,7 @@ class GithubReaderSlideCommit(GithubReaderSlide):
         i = 1
         for elem in commit_list:
             self._content['text-' + str(i)] = {
-                'text': '{}<br>created at : {}<br>{}'.format(elem['author'], elem['created_at'], elem['message'])
+                'text': '{}<br>created on {}<br>{}'.format(elem['author'], elem['created_at'], elem['message'])
             }
             self._content['image-' + str(i)] = {'src': elem['avatar_url']}
             i += 1
@@ -185,7 +190,7 @@ class GithubReaderSlideRelease(GithubReaderSlide):
                 name = "Undefined"
             self._content['text-' + str(i + 1)] = {
                 'text': '{} released on {} by {} version {}'
-                .format(release.title,release.created_at.strftime("%d %B %Y %H:%M"), name, release.tag_name)
+                .format(release.title, get_date_str(release.created_at), name, release.tag_name)
             }
             self._content['image-' + str(i + 1)] = {'src': ''}
         if 'text-1' not in self._content:
@@ -196,21 +201,17 @@ class GithubReaderSlideRelease(GithubReaderSlide):
 
 class GithubReaderSlideContributor(GithubReaderSlide):
     def __init__(self, repo_url, number_contributors, duration, git_obj, logger, logger_extra):
-        self._content = {'title-1': {'text': repo_url.split('/')[1]},
-                         'subtitle-1': {'text': 'Week\'s ' + str(number_contributors) + ' most contributors'}}
+        self._content = {'title-1': {'text': repo_url.split('/')[1]}}
         self._duration = duration
 
         contributors = git_obj.get_repo(repo_url).get_stats_contributors()
         sorted_contributors = sorted(contributors, reverse=True, key=lambda k: k.weeks[-1].c)
         for i, contributor in enumerate(sorted_contributors[:number_contributors]):
-            name = contributor.author.name
-            if not name:
-                name = 'Undefined'
-            self._content['text-' + str(i + 1)] = {
-                'text': name + "<br>" + "# commits : " + str(contributor.weeks[-1].c)}
+            name = contributor.author.name or contributor.author.login
+            self._content['text-' + str(i + 1)] = {'text': name + "<br>" + "# commits : " + str(contributor.weeks[-1].c)}
             self._content['image-' + str(i + 1)] = {'src': contributor.author.avatar_url}
         self._content['subtitle-1'] = {
-            'text': 'Best contributors since ' + sorted_contributors[0].weeks[-1].w.strftime("%d %B %Y %H:%M")}
+            'text': 'Best contributors since ' + get_date_str(sorted_contributors[0].weeks[-1].w, date_format='%d %B %Y')}
         self._content['background-1'] = {'src': 'plugins/github/github-background.png', 'color': 'black',
                                          'size': 'content'}
 
@@ -232,8 +233,8 @@ class GithubReaderSlideOrganization(GithubReaderSlide):
         sorted_repos = sorted(repos, reverse=True, key=lambda k: k.updated_at)
         for repo in sorted_repos[:number_organizations]:
             repos_organization.append(
-                '<p style=\"font-weight: 900;\">{}</p>updated at : {}'
-                .format(repo.full_name.split('/')[1],repo.updated_at.strftime("%d %B %Y %H:%M")))  # TODO if datetime = vide ??
+                '<p style=\"font-weight: 900;\">{}</p>updated on {}'
+                .format(repo.full_name.split('/')[1], get_date_str(repo.updated_at)))  # TODO if datetime = vide ??
 
         self._content = {'title-1': {'text': 'Last modified repos'}, 'subtitle-1': {'text': organization.name}}
         self._duration = duration
