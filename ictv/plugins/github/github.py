@@ -159,7 +159,8 @@ class GithubReaderSlideCommit(GithubReaderSlide):
             message = commit.commit.message.split("\n")[0]
             name = commit.author.name or commit.author.login
             self._content['text-' + str(i+1)] = {
-                'text': '{}<br>created on {}<br>{}'.format(name, get_date_str(commit.commit.author.date), message)
+                'text': '{}<br>committed on {}<br><i>{}</i> &mdash; (<span style="color: green">+{}</span>&nbsp;&nbsp;<span style="color: red;">-{}</span>)'
+                .format(name, get_date_str(commit.commit.author.date), message, commit.stats.additions, commit.stats.deletions)
             }
             self._content['image-' + str(i+1)] = {'src': commit.author.avatar_url}
 
